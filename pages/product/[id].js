@@ -5,14 +5,23 @@ export default function ProductDetail({ product }) {
   const { addToCart } = useCart();
 
   if (!product) {
-    return <p>Product tidak ditemukan</p>;
+    return (
+      <div style={{ padding: 24 }}>
+        <h2>Product tidak ditemukan</h2>
+        <Link href="/">Kembali ke Home</Link>
+      </div>
+    );
   }
 
   return (
     <div style={{ padding: 24 }}>
       <h1>{product.title}</h1>
 
-      <img src={product.image} width={200} style={{ objectFit: "contain" }} />
+      <img
+        src={product.image}
+        width={220}
+        style={{ objectFit: "contain" }}
+      />
 
       <p style={{ marginTop: 20 }}>{product.description}</p>
 
@@ -25,44 +34,49 @@ export default function ProductDetail({ product }) {
           background: "black",
           color: "white",
           cursor: "pointer",
-          marginTop: 12,
+          marginTop: 16,
         }}
       >
         Add To Cart
       </button>
 
       <Link href="/cart">
-  <button
-    style={{
-      padding: 12,
-          background: "black",
-          color: "white",
-          cursor: "pointer",
-          marginTop: 12,      
-    }}
-  >
-    Go to Cart
-  </button>
-</Link>
-
+        <p style={{ marginTop: 12, color: "blue" }}>
+          Go to Cart
+        </p>
+      </Link>
     </div>
   );
 }
 
-export async function getServerSideProps({ params }) {
+export async function getServerSideProps(context) {
+  const { id } = context.params;
+
   try {
-    const res = await fetch(`https://fakestoreapi.com/products/${params.id}`);
+    const res = await fetch(
+      `https://fakestoreapi.com/products/${id}`,
+      {
+        headers: {
+          Accept: "application/json",
+        },
+      }
+    );
 
     if (!res.ok) {
-      throw new Error("Fetch gagal");
+      return { props: { product: null } };
     }
 
     const product = await res.json();
 
+    if (!product || product.id === undefined) {
+      return { props: { product: null } };
+    }
+
     return {
       props: { product },
     };
-  } catch (error) {
+  } catch (e) {
+    console.error("SSR fetch error:", e);
     return {
       props: { product: null },
     };
