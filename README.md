@@ -1,5 +1,8 @@
 # README — RevoShop Next.js E-Commerce Frontend
 
+## Link Vercel
+https://milestone-3-raafi-team2-madrid.vercel.app/
+
 ## 📖 Project Overview
 RevoShop adalah aplikasi front end e-commerce berbasis **Next.js** yang mengimplementasikan **product listing**, **product detail**, dan **cart management**.  
 Aplikasi ini menggunakan beberapa strategi data fetching yaitu **Static Site Generation (SSG)**, **Server Side Rendering (SSR)**, dan **Client Side Rendering (CSR)** sesuai kebutuhan halaman.
@@ -137,3 +140,5 @@ Sudah diterapkan pada:
 1. Install dependencies:
    ```bash
    npm install
+
+
