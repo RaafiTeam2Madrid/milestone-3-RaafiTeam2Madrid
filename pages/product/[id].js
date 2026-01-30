@@ -9,9 +9,7 @@ export default function ProductDetail({ product }) {
       <div style={{ padding: 24 }}>
         <h2>Product tidak ditemukan</h2>
         <Link href="/">
-          <p style={{ color: "blue", marginTop: 12 }}>
-            Kembali ke Home
-          </p>
+          <p style={{ color: "blue" }}>Kembali ke Home</p>
         </Link>
       </div>
     );
@@ -24,8 +22,8 @@ export default function ProductDetail({ product }) {
       <img
         src={product.image}
         width={200}
-        style={{ objectFit: "contain" }}
         alt={product.title}
+        style={{ objectFit: "contain" }}
       />
 
       <p style={{ marginTop: 20 }}>
@@ -47,8 +45,6 @@ export default function ProductDetail({ product }) {
         Add To Cart
       </button>
 
-      <br />
-
       <Link href="/cart">
         <button
           style={{
@@ -57,6 +53,7 @@ export default function ProductDetail({ product }) {
             color: "white",
             cursor: "pointer",
             marginTop: 12,
+            marginLeft: 8,
           }}
         >
           Go to Cart
@@ -70,18 +67,24 @@ export async function getServerSideProps(context) {
   const { id } = context.params;
 
   try {
-  
-    const res = await fetch(`https://fakestoreapi.com/products/${id}`);
+ 
+    const res = await fetch(
+      `https://fakestoreapi.com/products/${id}`
+    );
 
     if (res.ok) {
       const product = await res.json();
+
       if (product && product.id) {
         return { props: { product } };
       }
     }
 
+  
+    const listRes = await fetch(
+      "https://fakestoreapi.com/products"
+    );
 
-    const listRes = await fetch("https://fakestoreapi.com/products");
     const list = await listRes.json();
 
     const product = list.find(
@@ -94,8 +97,9 @@ export async function getServerSideProps(context) {
       },
     };
 
-  } catch (error) {
-    console.error("SSR fetch error:", error);
+  } catch (e) {
+    console.error("SSR fetch error:", e);
+
     return {
       props: { product: null },
     };
