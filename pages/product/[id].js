@@ -8,7 +8,6 @@ export default function ProductDetail({ product }) {
     return (
       <div style={{ padding: 24 }}>
         <h2>Product tidak ditemukan</h2>
-
         <Link href="/">
           <p style={{ color: "blue", marginTop: 12 }}>
             Kembali ke Home
@@ -24,7 +23,7 @@ export default function ProductDetail({ product }) {
 
       <img
         src={product.image}
-        width={220}
+        width={200}
         style={{ objectFit: "contain" }}
         alt={product.title}
       />
@@ -33,9 +32,7 @@ export default function ProductDetail({ product }) {
         {product.description}
       </p>
 
-      <h2 style={{ marginTop: 16 }}>
-        ${product.price}
-      </h2>
+      <h2>${product.price}</h2>
 
       <button
         onClick={() => addToCart(product)}
@@ -43,43 +40,47 @@ export default function ProductDetail({ product }) {
           padding: 12,
           background: "black",
           color: "white",
-          borderRadius: 8,
           cursor: "pointer",
-          marginTop: 12
+          marginTop: 12,
         }}
       >
         Add To Cart
       </button>
 
+      <br />
+
       <Link href="/cart">
-        <p style={{ marginTop: 14, color: "blue" }}>
+        <button
+          style={{
+            padding: 12,
+            background: "#444",
+            color: "white",
+            cursor: "pointer",
+            marginTop: 12,
+          }}
+        >
           Go to Cart
-        </p>
+        </button>
       </Link>
     </div>
   );
 }
 
-
-
 export async function getServerSideProps(context) {
   const { id } = context.params;
 
   try {
-    // attempt direct endpoint
+  
     const res = await fetch(`https://fakestoreapi.com/products/${id}`);
 
     if (res.ok) {
       const product = await res.json();
-
       if (product && product.id) {
-        return {
-          props: { product }
-        };
+        return { props: { product } };
       }
     }
 
-    // fallback endpoint
+
     const listRes = await fetch("https://fakestoreapi.com/products");
     const list = await listRes.json();
 
@@ -88,14 +89,15 @@ export async function getServerSideProps(context) {
     );
 
     return {
-      props: { product: product || null }
+      props: {
+        product: product || null,
+      },
     };
 
-  } catch (e) {
-    console.error("SSR error:", e);
-
+  } catch (error) {
+    console.error("SSR fetch error:", error);
     return {
-      props: { product: null }
+      props: { product: null },
     };
   }
 }
