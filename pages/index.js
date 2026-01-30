@@ -5,6 +5,8 @@ export default function Home({ products }) {
     <div style={{ padding: 24 }}>
       <h1 style={{ marginBottom: 24 }}>Product Listing</h1>
 
+      {products.length === 0 && <p>Products unavailable</p>}
+
       <div
         style={{
           display: "grid",
@@ -20,36 +22,19 @@ export default function Home({ products }) {
               borderRadius: 12,
               padding: 16,
               background: "#fff",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
             }}
           >
             <img
               src={p.image}
               alt={p.title}
-              style={{
-                height: 160,
-                objectFit: "contain",
-                marginBottom: 12,
-              }}
+              style={{ height: 160, objectFit: "contain" }}
             />
 
-            <div>
-              <Link href={`/product/${p.id}`}>
-                <h3
-                  style={{
-                    fontSize: 16,
-                    marginBottom: 8,
-                    cursor: "pointer",
-                  }}
-                >
-                  {p.title}
-                </h3>
-              </Link>
+            <Link href={`/product/${p.id}`}>
+              <h3 style={{ cursor: "pointer" }}>{p.title}</h3>
+            </Link>
 
-              <p style={{ fontWeight: "bold" }}>${p.price}</p>
-            </div>
+            <p>${p.price}</p>
           </div>
         ))}
       </div>
@@ -58,16 +43,24 @@ export default function Home({ products }) {
 }
 
 export async function getStaticProps() {
-  const res = await fetch("https://fakestoreapi.com/products");
+  try {
+    const res = await fetch("https://fakestoreapi.com/products");
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch products");
+    if (!res.ok) throw new Error();
+
+    const products = await res.json();
+
+    return {
+      props: { products },
+      revalidate: 60,
+    };
+
+  } catch (e) {
+    console.log("SSG fetch failed, fallback empty");
+
+    return {
+      props: { products: [] },
+      revalidate: 30,
+    };
   }
-
-  const products = await res.json();
-
-  return {
-    props: { products },
-    revalidate: 60,
-  };
 }
