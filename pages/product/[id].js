@@ -8,7 +8,12 @@ export default function ProductDetail({ product }) {
     return (
       <div style={{ padding: 24 }}>
         <h2>Product tidak ditemukan</h2>
-        <Link href="/">Kembali ke Home</Link>
+
+        <Link href="/">
+          <p style={{ color: "blue", marginTop: 12 }}>
+            Kembali ke Home
+          </p>
+        </Link>
       </div>
     );
   }
@@ -21,11 +26,16 @@ export default function ProductDetail({ product }) {
         src={product.image}
         width={220}
         style={{ objectFit: "contain" }}
+        alt={product.title}
       />
 
-      <p style={{ marginTop: 20 }}>{product.description}</p>
+      <p style={{ marginTop: 20 }}>
+        {product.description}
+      </p>
 
-      <h2>${product.price}</h2>
+      <h2 style={{ marginTop: 16 }}>
+        ${product.price}
+      </h2>
 
       <button
         onClick={() => addToCart(product)}
@@ -33,15 +43,16 @@ export default function ProductDetail({ product }) {
           padding: 12,
           background: "black",
           color: "white",
+          borderRadius: 8,
           cursor: "pointer",
-          marginTop: 16,
+          marginTop: 12
         }}
       >
         Add To Cart
       </button>
 
       <Link href="/cart">
-        <p style={{ marginTop: 12, color: "blue" }}>
+        <p style={{ marginTop: 14, color: "blue" }}>
           Go to Cart
         </p>
       </Link>
@@ -49,36 +60,42 @@ export default function ProductDetail({ product }) {
   );
 }
 
+
+
 export async function getServerSideProps(context) {
   const { id } = context.params;
 
   try {
-    const res = await fetch(
-      `https://fakestoreapi.com/products/${id}`,
-      {
-        headers: {
-          Accept: "application/json",
-        },
+    // attempt direct endpoint
+    const res = await fetch(`https://fakestoreapi.com/products/${id}`);
+
+    if (res.ok) {
+      const product = await res.json();
+
+      if (product && product.id) {
+        return {
+          props: { product }
+        };
       }
+    }
+
+    // fallback endpoint
+    const listRes = await fetch("https://fakestoreapi.com/products");
+    const list = await listRes.json();
+
+    const product = list.find(
+      p => String(p.id) === String(id)
     );
 
-    if (!res.ok) {
-      return { props: { product: null } };
-    }
-
-    const product = await res.json();
-
-    if (!product || product.id === undefined) {
-      return { props: { product: null } };
-    }
-
     return {
-      props: { product },
+      props: { product: product || null }
     };
+
   } catch (e) {
-    console.error("SSR fetch error:", e);
+    console.error("SSR error:", e);
+
     return {
-      props: { product: null },
+      props: { product: null }
     };
   }
 }
