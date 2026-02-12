@@ -1,12 +1,17 @@
 
+export const dynamic = 'force-dynamic';
+
 import ProductCard from '@/components/ProductCard';
 import { Product } from '@/types/product';
 
 
 async function getProducts() {
-  const res = await fetch('https://fakestoreapi.com/products');
+  const res = await fetch('https://fakestoreapi.com/products', { 
+    cache: 'no-store' 
+  });
   
   if (!res.ok) {
+    
     throw new Error('Gagal mengambil data produk');
   }
   
