@@ -6,17 +6,17 @@ import { Product } from '@/types/product';
 
 async function getProducts() {
   try {
+    
     const res = await fetch('https://fakestoreapi.com/products', { 
       cache: 'no-store',
-      // Tambahin timeout biar gak nunggu kelamaan kalau API-nya lemot
-      signal: AbortSignal.timeout(5000) 
+      next: { revalidate: 0 } 
     });
     
     if (!res.ok) return null;
     return res.json();
   } catch (error) {
-    // Kalau API error, kita balikin null aja, jangan bikin website crash
-    console.error("API Error:", error);
+    
+    console.error("Fetch error:", error);
     return null;
   }
 }
@@ -24,18 +24,12 @@ async function getProducts() {
 export default async function Home() {
   const products: Product[] | null = await getProducts();
 
-  // Kalau data gagal diambil, kasih pesan cantik, jangan error putih
-  if (!products) {
+ 
+  if (!products || products.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <h2 className="text-xl font-bold text-red-600">Waduh, API-nya lagi Capek...</h2>
-        <p className="text-gray-600">Coba refresh halamannya sebentar lagi ya!</p>
-        <button 
-          onClick={() => window.location.reload()} 
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
-        >
-          Refresh Halaman
-        </button>
+      <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center">
+        <h2 className="text-2xl font-bold text-gray-800">Ups! Gagal Memuat Produk</h2>
+        <p className="text-gray-600 mt-2">Sepertinya server API sedang sibuk. Coba refresh sebentar lagi ya!</p>
       </div>
     );
   }
