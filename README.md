@@ -44,6 +44,8 @@ This project demonstrates advanced Next.js concepts including **Middleware** for
 ---
 
 ## 🔑 Demo Credentials
+## Link Vercel 
+https://milestone-3-raafi-team2-madrid-m995.vercel.app/
 
 To test the **Login**, **Checkout**, and **Admin** features, use these credentials:
 
@@ -72,3 +74,4 @@ src/
 ├── types/              # TypeScript Interfaces (Product, CartItem)
 ├── utils/              # API Helper Functions
 └── middleware.ts       # Route Protection Logic
+
